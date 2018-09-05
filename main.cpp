@@ -6,13 +6,22 @@
 
 
 
-void initializeGrid()
+void initializeGrid(bool ** grid, int size_x, int size_y)
 {
 
-
-
-
+    for (int x = 0; x < size_x; x++)
+    {
+        for (int y = 0; y < size_y; y++)
+        {
+            grid[x][y] = false;
+            if ((x > 4/5 * size_x) and (y > 4/5 * size_y))
+            {
+                grid[x][y] = true;
+            }
+        }
+    }
 }
+
 void update_position(SDL_Rect * rect, const Uint8 * state)
 {
 
