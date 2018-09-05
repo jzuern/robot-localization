@@ -29,10 +29,16 @@ public:
     Point * GetVertices(void);
     int GetNumberOfVertices(void);
     bool DrawFilledPolygon(const SDL_Color color, SDL_Renderer* renderer);
+    void rotateLeft();
+    void rotateRight();
+    void moveForward();
+    void moveBackward();
+
 private:
     Point * vertices;
     Point center;
     int length;
+    float orientation;
 };
 
 

@@ -22,55 +22,34 @@ void initializeGrid(bool ** grid, int size_x, int size_y)
     }
 }
 
-void update_position(SDL_Rect * rect, const Uint8 * state)
+void update_position(Polygon * poly, const Uint8 * state)
 {
-
     if (state[SDL_SCANCODE_RIGHT])
     {
-        rect->x += 1;
+        printf("rotating right\n");
+        poly->rotateRight();
     }
 
-    if (rect->x > WWIDTH)
-    {
-        rect->x = WWIDTH;
-    }
 
     if (state[SDL_SCANCODE_LEFT])
     {
-        rect->x -= 1;
-    }
-
-    if (rect->x < 0)
-    {
-        rect->x = 0;
+        printf("rotating left\n");
+        poly->rotateLeft();
     }
 
 
     if (state[SDL_SCANCODE_UP])
     {
-        rect->y -= 1;
+        printf("moving forward\n");
+        poly->moveForward();
     }
 
-    if (rect->y > WHEIGHT)
-    {
-        rect->y = WHEIGHT;
-    }
 
     if (state[SDL_SCANCODE_DOWN])
     {
-        rect->y += 1;
+        printf("moving backward\n");
+        poly->moveBackward();
     }
-
-    if (rect->y < 0)
-    {
-        rect->y = 0;
-    }
-}
-
-
-SDL_Point * generateShape(const int points_count)
-{
-
 
 }
 
@@ -114,107 +93,55 @@ int main() {
     int mouse_x;
     int mouse_y;
 
-    SDL_Rect rect;
-    rect.x = 0;
-    rect.y = 0;
-    rect.h = 100;
-    rect.w = 100;
-
     // NEW
 
-    SDL_RenderClear(ren);
-    SDL_Color color = {.r = 255, .g = 255, .b = 255, .a = 255 };
+    SDL_Color color = {.r = 255, .g = 0, .b = 0, .a = 255 };
     std::vector<Point> vertices;
 
-    vertices.push_back(Point(10, 10));
-    vertices.push_back(Point(100, 10));
-    vertices.push_back(Point(150, 75));
-    vertices.push_back(Point(20, 105));
+    vertices.push_back(Point(100, 100));
+    vertices.push_back(Point(100, 200));
+    vertices.push_back(Point(200, 200));
+    vertices.push_back(Point(200, 100));
 
     Polygon poly = Polygon(vertices);
 
-    poly.DrawFilledPolygon(color, ren);
 
-    SDL_RenderPresent(ren);
+    printf("Move mouse to create level. Press return to exit Creation Mode and enter Play Mode!\n");
 
-    getchar();
+    // first rendering loop
+    while (1) {
+
+        //First clear the renderer
+        SDL_RenderClear(ren);
+
+        //Draw the texture
+        SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+
+        SDL_RenderClear(ren); // fill the scene with white
+
+        poly.DrawFilledPolygon(color, ren);
+
+        SDL_RenderPresent(ren);
+
+        //Take a quick break after all that hard work
+        SDL_Delay(50);
+
+        SDL_PumpEvents();
+        const Uint8 *state = SDL_GetKeyboardState(NULL);
+
+        update_position(&poly, state);
+
+        if (state[SDL_SCANCODE_RETURN])
+        {
+            printf("finished level creation!\n");
+            break;
+        }
+    }
+
 
     SDL_DestroyRenderer(ren);
     SDL_DestroyWindow(win);
     SDL_Quit();
-
-
-//    // first rendering loop
-//    while (1) {
-//
-//        printf("Move mouse to create level. Press return to exit Creation Mode and enter Play Mode!\n");
-//
-//        //First clear the renderer
-//        SDL_RenderClear(ren);
-//
-//        //Draw the texture
-//        SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-//
-//        SDL_RenderClear(ren); // fill the scene with white
-//
-//        SDL_SetRenderDrawColor(ren, 255, 0, 0, 255); // the rect color (solid red)
-//        SDL_RenderFillRect(ren, &rect);
-//
-//
-////        SDL_RenderDrawPoints(ren, points, points_count);
-//
-//        //Update the screen
-//        SDL_RenderPresent(ren);
-//
-//        //Take a quick break after all that hard work
-//        SDL_Delay(20);
-//
-//        SDL_PumpEvents();
-//        if (SDL_GetMouseState(&mouse_x, &mouse_y) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-//            SDL_Log("Mouse Button 1 (left) is pressed.");
-//            printf("Coordinates: x = %i, y = %i\n", mouse_x, mouse_y);
-//        }
-//
-//        const Uint8 *state = SDL_GetKeyboardState(NULL);
-//
-//        if (state[SDL_SCANCODE_RETURN])
-//        {
-//            printf("finished level creation!\n");
-//            break;
-//        }
-//    }
-
-//    // second rendering loop
-//    while (1) {
-//
-//        //First clear the renderer
-//        SDL_RenderClear(ren);
-//
-//        //Draw the texture
-//        SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-//
-//        SDL_RenderClear(ren); // fill the scene with white
-//
-//        SDL_SetRenderDrawColor(ren, 255, 0, 0, 255); // the rect color (solid red)
-//        SDL_RenderFillRect(ren, &rect);
-//
-//        //Update the screen
-//        SDL_RenderPresent(ren);
-//
-//        //Take a quick break after all that hard work
-//        SDL_Delay(20);
-//
-//        SDL_PumpEvents();
-//        if (SDL_GetMouseState(&mouse_x, &mouse_y) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-//            SDL_Log("Mouse Button 1 (left) is pressed.");
-//            printf("Coordinates: x = %i, y = %i\n", mouse_x, mouse_y);
-//        }
-//
-//        const Uint8 *state = SDL_GetKeyboardState(NULL);
-//        update_position(&rect, state);
-//    }
-
-
 
 
 

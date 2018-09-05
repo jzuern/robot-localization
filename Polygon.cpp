@@ -5,7 +5,7 @@
 #include "Polygon.h"
 #include "SDL.h"
 #include <iostream>
-
+#include <math.h>
 
 
 bool Polygon::DrawFilledPolygon(const SDL_Color color, SDL_Renderer* renderer) {
@@ -24,6 +24,11 @@ bool Polygon::DrawFilledPolygon(const SDL_Color color, SDL_Renderer* renderer) {
 
     Point center = this->GetCenter();
     Point *verts = this->GetVertices();      // Vertex information of the polygon
+
+    printf("Polygon center = (%i,%i)\n",center.x, center.y);
+    printf("Polygon orientation = (%f)\n",orientation);
+    printf("1. Polygon vertex = (%i,%i)\n", vertices[0].x,vertices[0].y);
+
 
     topY = verts[0].y;          // Initialize the top y coordinate to the first point
     topCnt = 0;            // set to top point to 0
@@ -110,9 +115,15 @@ bool Polygon::DrawFilledPolygon(const SDL_Color color, SDL_Renderer* renderer) {
 
 
 Polygon::Polygon(std::vector<Point> vertices){
-    int minX = 0xFFFF, minY = 0xFFFF, maxX = 0, maxY = 0;
+    orientation = 0.0;
+    int minX = 0xFFFF;
+    int minY = 0xFFFF;
+    int maxX = 0;
+    int maxY = 0;
+
     this->length = vertices.size();
     this->vertices = new Point[length];
+
     for (int i = 0; i < this->length; i++) {
         this->vertices[i] = Point(vertices[i].x, vertices[i].y);
         if (this->vertices[i].x > maxX) maxX = this->vertices[i].x;
@@ -129,6 +140,23 @@ Polygon::~Polygon() {
 }
 
 Point Polygon::GetCenter(void) {
+
+    int minX = 0xFFFF;
+    int minY = 0xFFFF;
+    int maxX = 0;
+    int maxY = 0;
+
+    for (int i = 0; i < this->length; i++) {
+        this->vertices[i] = Point(vertices[i].x, vertices[i].y);
+        if (this->vertices[i].x > maxX) maxX = this->vertices[i].x;
+        if (this->vertices[i].x < minX) minX = this->vertices[i].x;
+        if (this->vertices[i].y > maxY) maxY = this->vertices[i].y;
+        if (this->vertices[i].y < minY) minY = this->vertices[i].y;
+    }
+    this->center.x = minX + ((maxX - minX) / 2);
+    this->center.y = minY + ((maxY - minY) / 2);
+
+
     return center;
 }
 
@@ -138,4 +166,54 @@ Point * Polygon::GetVertices(void) {
 
 int Polygon::GetNumberOfVertices(void) {
     return this->length;
+}
+
+
+
+
+void Polygon::moveForward() {
+
+    for (int i = 0; i < length; i++)
+    {
+        vertices[i].x += sin(orientation);
+        vertices[i].y += cos(orientation);
+    }
+}
+
+void Polygon::moveBackward(){
+
+    for (int i = 0; i < length; i++)
+    {
+        vertices[i].x -= sin(orientation);
+        vertices[i].y -= cos(orientation);
+    }
+}
+
+
+
+void Polygon::rotateLeft() {
+
+    orientation += 1.0 * 2*M_PI/360 ;
+
+    for (int i = 0; i < length; i++)
+    {
+        vertices[i].x += int(cos(orientation) * (vertices[i].x - center.x) -
+                        sin(orientation) * (vertices[i].y - center.y));
+        vertices[i].y += int(sin(orientation) * (vertices[i].x - center.x) -
+                        cos(orientation) * (vertices[i].y - center.y));
+    }
+
+}
+
+void Polygon::rotateRight() {
+
+    orientation -= 1.0 * 2*M_PI/360 ;
+
+    for (int i = 0; i < length; i++)
+    {
+        vertices[i].x -= int(cos(orientation) * (vertices[i].x - center.x) -
+                         sin(orientation) * (vertices[i].y - center.y));
+        vertices[i].y -= int(sin(orientation) * (vertices[i].x - center.x) -
+                         cos(orientation) * (vertices[i].y - center.y));
+    }
 }
