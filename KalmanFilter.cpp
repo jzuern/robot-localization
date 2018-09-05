@@ -12,7 +12,7 @@ bool KalmanFilter::predict() {
 
 
     // returns mu_t and covariance_t
-    return true
+    return true;
 }
 
 

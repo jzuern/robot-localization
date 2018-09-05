@@ -10,7 +10,11 @@
 const char * window_title = "Robot Program";
 int x_start = 100;
 int y_start = 100;
-int width = 640;
-int height  = 480;
+
+
+#define TILE_SIZE    16
+#define WWIDTH        640
+#define    WHEIGHT        480
+
 
 #endif //UNTITLED1_DEFINES_H

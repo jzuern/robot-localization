@@ -5,8 +5,9 @@ Robot Localization Game
 
 
 # TODO
-
-- Show grid and grid tilings
-- make robot rotate
+- show obstacle grid
+- make polygon rotate
 - make robot drive like a car (steer and drive forwards)
 
+# DONE
+- Draw polygon to the screen
