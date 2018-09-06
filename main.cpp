@@ -2,58 +2,24 @@
 #include <SDL.h>
 #include <vector>
 #include "defines.h"
-#include "Polygon.h"
+#include "Robot.h"
+#include "Landmark.h"
 
 
-
-void initializeGrid(bool ** grid, int size_x, int size_y)
+std::vector<Landmark> createLandmarks()
 {
+    std::vector<Landmark> lmks;
 
-    for (int x = 0; x < size_x; x++)
-    {
-        for (int y = 0; y < size_y; y++)
-        {
-            grid[x][y] = false;
-            if ((x > 4./5 * size_x) and (y > 4./5 * size_y))
-            {
-                grid[x][y] = true;
-            }
-        }
-    }
+    SDL_Color color_red = {.r = 255, .g = 0, .b = 0, .a = 255 };
+    SDL_Color color_green = {.r = 0, .g = 255, .b = 0, .a = 255 };
+    SDL_Color color_blue = {.r = 0, .g = 0, .b = 255, .a = 255 };
+
+    lmks.push_back( Landmark(100.,100.,color_red));
+    lmks.push_back( Landmark(250.,50.,color_green));
+    lmks.push_back( Landmark(350.,300.,color_blue));
+
+    return lmks;
 }
-
-void update_position(Polygon * poly, const Uint8 * state)
-{
-    if (state[SDL_SCANCODE_RIGHT])
-    {
-        printf("rotating right\n");
-        poly->rotateRight();
-    }
-
-
-    if (state[SDL_SCANCODE_LEFT])
-    {
-        printf("rotating left\n");
-        poly->rotateLeft();
-    }
-
-
-    if (state[SDL_SCANCODE_UP])
-    {
-        printf("moving forward\n");
-        poly->moveForward();
-    }
-
-
-    if (state[SDL_SCANCODE_DOWN])
-    {
-        printf("moving backward\n");
-        poly->moveBackward();
-    }
-
-}
-
-
 
 
 int main() {
@@ -87,41 +53,53 @@ int main() {
     for(int i = 0; i < size_x; ++i)
         grid[i] = new bool[size_y];
 
-    initializeGrid(grid, size_x, size_y);
 
 
-    int mouse_x;
-    int mouse_y;
+    std::vector<Landmark> landmarks = createLandmarks();
 
-    // NEW
-
-    SDL_Color color = {.r = 255, .g = 0, .b = 0, .a = 255 };
-    std::vector<Point> vertices;
-
-    vertices.push_back(Point(100, 100));
-    vertices.push_back(Point(100, 200));
-    vertices.push_back(Point(200, 200));
-    vertices.push_back(Point(200, 100));
-
-    Polygon poly = Polygon(vertices);
+    Robot robby(200, 200, 0.0, 20);
 
 
-    printf("Move mouse to create level. Press return to exit Creation Mode and enter Play Mode!\n");
 
-    // first rendering loop
+    // rendering loop
     while (1) {
 
         //First clear the renderer
         SDL_RenderClear(ren);
 
         //Draw the texture
-        SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+        SDL_SetRenderDrawColor(ren, 200, 200, 255, 255);
 
         SDL_RenderClear(ren); // fill the scene with white
 
-        poly.DrawFilledPolygon(color, ren);
+        SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
+
+        // render robot
+        robby.render(ren);
+
+        // render landmarks
+        for (auto lm = landmarks.begin(); lm != landmarks.end(); ++lm)
+        {
+            SDL_SetRenderDrawColor(ren, lm->id.r, lm->id.g, lm->id.b, lm->id.a);
+            lm->render(ren);
+        }
+        // update renderer
+        SDL_RenderPresent(ren);
+
+        // measure landmark positions
+        auto measured_landmarks = robby.measureLandmarks(landmarks);
+
+        // visualize measured landmarks
+        for (auto lm = measured_landmarks.begin(); lm != measured_landmarks.end(); ++lm)
+        {
+            SDL_SetRenderDrawColor(ren, lm->id.r, lm->id.g, lm->id.b, lm->id.a);
+            lm->render(ren);
+        }
 
         SDL_RenderPresent(ren);
+
+
+
 
         //Take a quick break after all that hard work
         SDL_Delay(50);
@@ -129,11 +107,11 @@ int main() {
         SDL_PumpEvents();
         const Uint8 *state = SDL_GetKeyboardState(NULL);
 
-        update_position(&poly, state);
+        robby.move(state);
 
         if (state[SDL_SCANCODE_RETURN])
         {
-            printf("finished level creation!\n");
+            printf("Finished level creation!\n");
             break;
         }
     }

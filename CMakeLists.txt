@@ -12,7 +12,7 @@ find_package(Eigen3 REQUIRED)
 include_directories(${EIGEN3_INCLUDE_DIR})
 
 
-add_executable(untitled1 main.cpp Robot.cpp Robot.h defines.h KalmanFilter.cpp KalmanFilter.h Polygon.cpp Polygon.h)
+add_executable(untitled1 main.cpp Robot.cpp Robot.h defines.h KalmanFilter.cpp KalmanFilter.h Landmark.cpp Landmark.h)
 
 
 target_link_libraries(untitled1 ${SDL2_LIBRARIES})
