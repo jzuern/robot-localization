@@ -28,10 +28,11 @@ typedef struct Velocity
 
 class Robot {
 public:
-    Robot(int x_start, int y_start, float orientation, int radius);
+    Robot(int x_start, int y_start, float orientation, int radius, SDL_Color col);
     ~Robot();
     Pose pose;
     Velocity velocity;
+    SDL_Color color;
 
     int radius;
     void render(SDL_Renderer * ren);
@@ -42,6 +43,7 @@ public:
     void moveBackward();
     void rotateLeft();
     void rotateRight();
+    void setPosition(float x, float y);
 
     Eigen::VectorXf get_state();
 

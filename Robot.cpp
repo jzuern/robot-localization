@@ -7,12 +7,13 @@
 #include <random>
 
 
-Robot::Robot(int x_start, int y_start, float orientation, int rad)
+Robot::Robot(int x_start, int y_start, float orientation, int rad, SDL_Color col)
 {
     pose.x = x_start;
     pose.y = y_start;
     pose.phi = orientation;
     radius = rad;
+    color = col;
 
     velocity.x = 0.;
     velocity.y = 0.;
@@ -36,6 +37,8 @@ void Robot::render(SDL_Renderer * ren)
 
     int32_t int_pose_x = int(pose.x);
     int32_t int_pose_y = int(pose.y);
+
+    SDL_SetRenderDrawColor(ren, color.r, color.g, color.b, color.a);
 
 
     while (x >= y)
@@ -150,6 +153,14 @@ void Robot::rotateRight() {
 }
 
 
+void Robot::setPosition(float x, float y) {
+
+    pose.x = x;
+    pose.y = y;
+
+}
+
+
 
 std::vector<Landmark> Robot::measureLandmarks(std::vector<Landmark> landmarks)
 {
@@ -179,12 +190,12 @@ std::vector<Landmark> Robot::measureLandmarks(std::vector<Landmark> landmarks)
 
 Eigen::VectorXf Robot::get_state()
 {
-    Eigen::VectorXf state;
+    Eigen::VectorXf state(4);
 
-    state[0] = this->pose.x;
-    state[1] = this->pose.y;
-    state[2] = this->velocity.x;
-    state[3] = this->velocity.y;
+    state(0) = this->pose.x;
+    state(1) = this->pose.y;
+    state(2) = this->velocity.x;
+    state(3) = this->velocity.y;
 
     return state;
 }
