@@ -168,12 +168,23 @@ std::vector<Landmark> Robot::measureLandmarks(std::vector<Landmark> landmarks)
         float est_pos_x = rx + lm->pos.x;
         float est_pos_y = ry + lm->pos.y;
 
-//        printf("measured lm position: (%f, %f) \n", est_pos_x, est_pos_y);
-//        printf("actual lm position: (%f, %f) \n", mean_x, mean_y);
-
         measured_landmarks.push_back(Landmark(est_pos_x,est_pos_y,lm->id));
     }
 
     return measured_landmarks;
 
+}
+
+
+
+Eigen::VectorXf Robot::get_state()
+{
+    Eigen::VectorXf state;
+
+    state[0] = this->pose.x;
+    state[1] = this->pose.y;
+    state[2] = this->velocity.x;
+    state[3] = this->velocity.y;
+
+    return state;
 }

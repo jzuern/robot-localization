@@ -8,6 +8,7 @@
 #include <SDL_render.h>
 #include "Landmark.h"
 #include <vector>
+#include <Eigen/Dense>
 
 
 typedef struct Pose
@@ -41,6 +42,8 @@ public:
     void moveBackward();
     void rotateLeft();
     void rotateRight();
+
+    Eigen::VectorXf get_state();
 
     std::vector<Landmark> measureLandmarks(std::vector<Landmark> landmarks);
 

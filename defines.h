@@ -26,15 +26,6 @@ void from_local_to_global(float * local, float * global, float * delta)
 
 }
 
-// copied
-Eigen::MatrixXf newMeasurement(Eigen::MatrixXf measurement, float ts)
-{
-    Eigen::MatrixXf matP1; // variances of components of prediction
-    Eigen::MatrixXf cvecE; // residual Error
-    Eigen::MatrixXf cvecY; // estimated input
-    float timeDelta = ts-pts; // Establish system matrix for time duration since last observation
-    auto matA = matA_orig.add (mat)
-}
 
 
 #endif //UNTITLED1_DEFINES_H
