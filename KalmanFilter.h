@@ -16,10 +16,21 @@ public:
     bool predict();
 
 private:
-    Eigen::VectorXd mean;
-    Eigen::VectorXd measurements;
-    Eigen::VectorXd control;
-    Eigen::MatrixXd covariance;
+//    Eigen::VectorXf mean;
+//    Eigen::VectorXf measurements;
+//    Eigen::VectorXf control;
+//    Eigen::MatrixXf covariance;
+
+
+    Eigen::MatrixXf A; // system matrix
+    Eigen::VectorXf x; // state vector
+    Eigen::VectorXf w; // measurement vector
+
+    // x_(k+1) = A*x + w
+
+    Eigen::MatrixXf Y; // observation matrix
+    Eigen::MatrixXf C; // ??
+    Eigen::MatrixXf 
 
 
 

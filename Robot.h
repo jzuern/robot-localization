@@ -18,11 +18,20 @@ typedef struct Pose
 
 
 
+typedef struct Velocity
+{
+    float x, y;
+    float phi;
+} Velocity;
+
+
 class Robot {
 public:
     Robot(int x_start, int y_start, float orientation, int radius);
     ~Robot();
     Pose pose;
+    Velocity velocity;
+
     int radius;
     void render(SDL_Renderer * ren);
 

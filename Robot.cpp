@@ -13,6 +13,10 @@ Robot::Robot(int x_start, int y_start, float orientation, int rad)
     pose.y = y_start;
     pose.phi = orientation;
     radius = rad;
+
+    velocity.x = 0.;
+    velocity.y = 0.;
+    velocity.phi = 0.;
 }
 
 Robot::~Robot()
