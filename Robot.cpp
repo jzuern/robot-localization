@@ -9,15 +9,20 @@
 
 Robot::Robot(int x_start, int y_start, float orientation, int rad, SDL_Color col)
 {
+
+    // state properties
     pose.x = x_start;
     pose.y = y_start;
     pose.phi = orientation;
-    radius = rad;
-    color = col;
+
 
     velocity.x = 0.;
     velocity.y = 0.;
     velocity.phi = 0.;
+
+    // static properties
+    radius = rad;
+    color = col;
 }
 
 Robot::~Robot()
@@ -72,8 +77,6 @@ void Robot::render(SDL_Renderer * ren)
     int x1 = x0 + int(20*(cos(pose.phi) - sin(pose.phi)));
     int y1 = y0 + int(20*(sin(pose.phi) + cos(pose.phi)));
 
-    printf("line: x0 = %i, x1 = %i,y0 = %i,y1 = %i\n", x0,x1,y0,y1);
-
     SDL_RenderDrawLine(ren, x0, y0, x1, y1);
 
 
@@ -119,7 +122,7 @@ void Robot::moveForward() {
 
     pose.x += scale  * (cos(pose.phi) - sin(pose.phi));
     pose.y += scale * (sin(pose.phi) + cos(pose.phi));
-    printf("pose.x = %f, pose.y = %f\n", pose.x, pose.y);
+//    printf("pose.x = %f, pose.y = %f\n", pose.x, pose.y);
 }
 
 void Robot::moveBackward(){
@@ -128,7 +131,7 @@ void Robot::moveBackward(){
 
     pose.x -= scale  * (cos(pose.phi) - sin(pose.phi));
     pose.y -= scale * (sin(pose.phi) + cos(pose.phi));
-    printf("pose.x = %f, pose.y = %f\n", pose.x, pose.y);
+//    printf("pose.x = %f, pose.y = %f\n", pose.x, pose.y);
 }
 
 
@@ -153,11 +156,11 @@ void Robot::rotateRight() {
 }
 
 
-void Robot::setPosition(float x, float y) {
+void Robot::setPose(float x, float y, float phi) {
 
     pose.x = x;
     pose.y = y;
-
+    pose.phi = phi;
 }
 
 
@@ -190,12 +193,14 @@ std::vector<Landmark> Robot::measureLandmarks(std::vector<Landmark> landmarks)
 
 Eigen::VectorXf Robot::get_state()
 {
-    Eigen::VectorXf state(4);
+    Eigen::VectorXf state(6);
 
     state(0) = this->pose.x;
     state(1) = this->pose.y;
-    state(2) = this->velocity.x;
-    state(3) = this->velocity.y;
+    state(2) = this->pose.phi;
+    state(3) = this->velocity.x;
+    state(4) = this->velocity.y;
+    state(5) = this->velocity.phi;
 
     return state;
 }

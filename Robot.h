@@ -43,7 +43,7 @@ public:
     void moveBackward();
     void rotateLeft();
     void rotateRight();
-    void setPosition(float x, float y);
+    void setPose(float x, float y, float phi);
 
     Eigen::VectorXf get_state();
 

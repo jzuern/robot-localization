@@ -5,9 +5,10 @@ Robot Localization Game
 
 
 # TODO
+- debug robot kalman
+- make Kalman filter use landmark measurements
 - show obstacle grid
-- make polygon rotate
-- make robot drive like a car (steer and drive forwards)
 
 # DONE
-- Draw polygon to the screen
+- make robot drive like a car (steer and drive forwards)
+- debug Kalman filter with position as input

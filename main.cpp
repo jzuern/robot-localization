@@ -68,11 +68,9 @@ int main() {
     // Kalman filter stuff
 
     double dt = 1.0/30; // Time step
-    int n = 4; // number of state variables
-    int m = 2; // number of measurements
+    int n = 6; // number of state variables
+    int m = 3; // number of measurements
 
-//    int n = 3; // number of state variables
-//    int m = 1; // number of measurements
 
     Eigen::MatrixXf A(n, n); // System dynamics matrix
     Eigen::MatrixXf C(m, n); // Output matrix
@@ -80,43 +78,38 @@ int main() {
     Eigen::MatrixXf R(m, m); // Measurement noise covariance
     Eigen::MatrixXf P(n, n); // Estimate error covariance
 
-    A <<    1, dt, 0, 0,
-            0, 1, dt, 0,
-            0, 0, 1 , 0,
-            0, 0, 0, 1;
+    A <<    1, 0, 0, dt, 0, 0,
+            0, 1, 0, 0, dt, 0,
+            0, 0, 1, 0, 0, dt,
+            0, 0, 0 , 1, 0, 0,
+            0, 0, 0, 0, 1, 0,
+            0, 0, 0, 0, 0, 1,
 
-    C <<    1, 0, 0, 0,
-            0, 1, 0, 0;
+    C <<    1, 0, 0, 0, 0, 0,
+            0, 1, 0, 0, 0, 0,
+            0, 0, 1, 0, 0, 0;
 
-
-//    // Discrete LTI projectile motion, measuring position only
-//    A <<    1, dt, 0,
-//            0, 1, dt,
-//            0, 0, 1;
-//
-//    C << 1, 0, 0;
-//    Q << .05, .05, .0, .05, .05, .0, .0, .0, .0;
-//    R <<    5.0;
-
-//    P <<    .1, .1, .1,
-//            .1, 10000, 10,
-//            .1, 10, 100;
 
     // Reasonable covariance matrices
-    Q <<    .05, .05, .0, .0,
-            .05, .05, .0, .0,
-            .0, .0, .0, .0,
-            .0, .0, .0, .0;
+    Q <<    .05, .05, .05, .0, .0, .0,
+            .05, .05, .05, .0, .0, .0,
+            .05, .05, .05, .0, .0, .0,
+            .0, .0, .0, .0, .0 ,.0,
+            .0, .0, .0, .0, .0, .0,
+            .0, .0, .0, .0, .0, .0;
 
 
-    R <<    5.0, 0.0,
-            0.0, 5.0;
+    R <<    5.0, 0.0, 0.0,
+            0.0, 5.0, 0.0,
+            0.0, 0.0, 5.0;
 
 
-    P <<    .1, .1, .1, .1,
-            .1, 10000, 10, 10,
-            .1, 10, 100, 100,
-            .1, 10, 100, 100;
+    P <<    .1, .1, .1, .1, .1, .1,
+            .1, .1, 10, 10, .1, .1,
+            .1, 10, 10, 10, .1, .1,
+            .1, 10, 10, 10, .1, .1,
+            .1, 10, 10, 10, .1, .1,
+            .1, 10, 10, 10, 0.1, 0.1;
 
 
     KalmanFilter kf(dt, A, C, Q, R, P);
@@ -124,7 +117,7 @@ int main() {
 
     // Best guess of initial states
     Eigen::VectorXf x0(n);
-    x0 << 200, 200, 0., 0.;
+    x0 << 200, 200, 0.0, 0., 0., 0.0;
     float t0 = 0.0;
     kf.init(t0, x0);
 
@@ -159,14 +152,18 @@ int main() {
 
         // TODO: change from measured absolute position to measured landmarks
         Eigen::VectorXf y = robby.get_state();
-        Eigen::VectorXf y_new(2);
+        Eigen::VectorXf y_new(3);
 
-        y_new << y(0), y(1);
+        y_new << y(0), y(1), y(2);
 
         kf.update(y_new);
         auto x_hat = kf.state();
 
-        robby_estimate.setPosition(x_hat(0), x_hat(1));
+
+        printf("KF:: x = (%f, %f, %f)\n", y_new(0), y_new(1), y_new(2));
+        printf("KF:: x_hat = (%f, %f, %f)\n", x_hat(0), x_hat(1), x_hat(2));
+
+        robby_estimate.setPose(x_hat(0), x_hat(1), x_hat(2));
         robby_estimate.render(ren);
 
 
