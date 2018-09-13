@@ -1,11 +1,11 @@
 #include <iostream>
 #include <SDL.h>
 #include <vector>
-#include "defines.h"
+#include "Eigen/Dense"
+
 #include "Robot.h"
 #include "Landmark.h"
 #include "KalmanFilter.h"
-#include "Eigen/Dense"
 
 
 std::vector<Landmark> createLandmarks()
@@ -32,7 +32,7 @@ int main() {
     }
 
 
-    SDL_Window *win = SDL_CreateWindow(window_title, x_start, y_start, WWIDTH, WHEIGHT, SDL_WINDOW_SHOWN);
+    SDL_Window *win = SDL_CreateWindow("Robot Program", XSTART, YSTART, WWIDTH, WHEIGHT, SDL_WINDOW_SHOWN);
     if (win == nullptr){
         std::cout << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
         SDL_Quit();
@@ -48,15 +48,6 @@ int main() {
     }
 
 
-    int size_x = WWIDTH / TILE_SIZE;
-    int size_y = WHEIGHT / TILE_SIZE;
-
-    bool ** grid = new bool*[size_x];
-    for(int i = 0; i < size_x; ++i)
-        grid[i] = new bool[size_y];
-
-
-
     std::vector<Landmark> landmarks = createLandmarks();
 
     SDL_Color orange {.r=255, .g=165, .b=0, .a=255};
@@ -67,7 +58,6 @@ int main() {
 
     // Kalman filter stuff
 
-    double dt = 1.0/30; // Time step
     int n = 4; // number of state variables
     int m = 2; // number of measurements
 
@@ -79,14 +69,17 @@ int main() {
     Eigen::MatrixXf P(n, n); // Estimate error covariance
 
 
-
-
     // without PHI
+
+    // Best guess of initial states
+    Eigen::VectorXf x0(n);
+    x0 << 0.0, 0.0, 0.0, 0.0 ;
+
 
     A <<    1., 0., 0, 0.,
             0., 1., 0., 0,
-            dt, 0., 1., 0.,
-            0.0, dt, 0., 1.;
+            DT, 0., 1., 0.,
+            0.0, DT, 0., 1.;
 
 
     C <<    1., 0., 0., 0.,
@@ -108,18 +101,41 @@ int main() {
             .1, .1, .1, .1,
             .1, .1, .1, .1;
 
-
-
-    // Reasonable covariance matrices
-//    Q <<    .05, .05, .05, .0, .0, .0,
-//            .05, .05, .05, .0, .0, .0,
-//            .05, .05, .05, .0, .0, .0,
-//            .0, .0, .0, .0, .0 ,.0,
-//            .0, .0, .0, .0, .0, .0,
-//            .0, .0, .0, .0, .0, .0;
-
-
-
+//    // with PHI
+//
+//
+//    // Best guess of initial states
+//    Eigen::VectorXf x0(n);
+//    x0 << 50, 50., 0., 0., 0., 0.;
+//
+//
+//    A <<    1., 0., 0., DT, 0., 0.,
+//            0., 1., 0., 0., DT, 0.,
+//            0., 0., 1., 0., 0., DT,
+//            0., 0., 0., 0., 0., 0.,
+//            0., 0., 0., 0., 0., 0.,
+//            0., 0., 0., 0., 0., 0.;
+//
+//
+//    C <<    1., 0., 0., 0., 0., 0.,
+//            0., 1., 0., 0., 0., 0.,
+//            0., 0., 0., 0., 0., 0.;
+//
+//    R <<    1.0, 0.0, 0.0,
+//            0.0, 1.0, 0.0,
+//            0.0, 0.0, 1.0;
+//
+//
+//
+//    // Reasonable covariance matrices
+//    Q <<    .05, .05, .05, .05, .05, .05,
+//            .05, .05, .05, .05, .05, .05,
+//            .05, .05, .05, .05, .05, .05,
+//            .05, .05, .05, .05, .05, .05,
+//            .05, .05, .05, .05, .05, .05,
+//            .05, .05, .05, .05, .05, .05;
+//
+//
 //    P <<    .1, .1, .1, .1, .1, .1,
 //            .1, .1, .1, .1, .1, .1,
 //            .1, .1, .1, .1, .1, .1,
@@ -130,12 +146,8 @@ int main() {
 
 
 
-    KalmanFilter kf(dt, A, C, Q, R, P);
+    KalmanFilter kf(DT, A, C, Q, R, P);
 
-
-    // Best guess of initial states
-    Eigen::VectorXf x0(n);
-    x0 << 0.0, 0.0, 0.0, 0.0;
 
     float t0 = 0.0;
     kf.init(t0, x0);
@@ -157,52 +169,43 @@ int main() {
         // render robot
         robby.render(ren);
 
-        // render landmarks
+//         render landmarks
         for (auto lm = landmarks.begin(); lm != landmarks.end(); ++lm)
         {
             SDL_SetRenderDrawColor(ren, lm->id.r, lm->id.g, lm->id.b, lm->id.a);
             lm->render(ren);
         }
+
         // update renderer
         SDL_RenderPresent(ren);
 
         // measure landmark positions
         auto measured_landmarks = robby.measureLandmarks(landmarks);
 
-        // TODO: change from measured absolute position to measured landmarks
-        Eigen::VectorXf y = robby.get_state();
-        Eigen::VectorXf y_new(2);
-
-        y_new << y(0), y(1);
-
-        kf.update(y_new);
+        Eigen::VectorXf state = robby.get_state();
+        kf.update(state);
         auto x_hat = kf.state();
-
-        robby_estimate.setPose(x_hat(0), x_hat(1),  0.0);
-
+//
+        robby_estimate.setPose(x_hat(0), x_hat(1), 0.0);
         robby_estimate.render(ren);
 
 
         SDL_RenderPresent(ren);
 
 
-
-
         //Take a quick break after all that hard work
         SDL_Delay(50);
 
         SDL_PumpEvents();
-        const Uint8 *state = SDL_GetKeyboardState(NULL);
+        const Uint8 *key_pressed = SDL_GetKeyboardState(NULL);
 
-        robby.move(state);
-
-
+        robby.move(key_pressed);
 
 
 
-        if (state[SDL_SCANCODE_RETURN])
+        if (key_pressed[SDL_SCANCODE_RETURN])
         {
-            printf("Finished level creation!\n");
+            printf("Exiting game!\n");
             break;
         }
     }

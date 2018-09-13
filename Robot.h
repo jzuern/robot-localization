@@ -9,6 +9,7 @@
 #include "Landmark.h"
 #include <vector>
 #include <Eigen/Dense>
+#include "defines.h"
 
 
 typedef struct Pose

@@ -9,12 +9,10 @@
 
 Robot::Robot(int x_start, int y_start, float orientation, int rad, SDL_Color col)
 {
-
     // state properties
     pose.x = x_start;
     pose.y = y_start;
     pose.phi = orientation;
-
 
     velocity.x = 0.;
     velocity.y = 0.;
@@ -74,8 +72,8 @@ void Robot::render(SDL_Renderer * ren)
 
     int x0 = int_pose_x;
     int y0 = int_pose_y;
-    int x1 = x0 + int(20*(cos(pose.phi) - sin(pose.phi)));
-    int y1 = y0 + int(20*(sin(pose.phi) + cos(pose.phi)));
+    int x1 = x0 + int(15*(cos(pose.phi) - sin(pose.phi)));
+    int y1 = y0 + int(15*(sin(pose.phi) + cos(pose.phi)));
 
     SDL_RenderDrawLine(ren, x0, y0, x1, y1);
 
@@ -118,41 +116,37 @@ void Robot::move(const Uint8 * state)
 
 void Robot::moveForward() {
 
-    float scale = 2.0;
+    velocity.x = DT * (cos(pose.phi) - sin(pose.phi));
+    velocity.y = DT * (sin(pose.phi) + cos(pose.phi));
 
-    pose.x += scale  * (cos(pose.phi) - sin(pose.phi));
-    pose.y += scale * (sin(pose.phi) + cos(pose.phi));
-//    printf("pose.x = %f, pose.y = %f\n", pose.x, pose.y);
+    pose.x += velocity.x;
+    pose.y += velocity.y;
 }
 
 void Robot::moveBackward(){
 
-    float scale = 2.0;
+    velocity.x = - DT * (cos(pose.phi) - sin(pose.phi));
+    velocity.y = - DT * (sin(pose.phi) + cos(pose.phi));
 
-    pose.x -= scale  * (cos(pose.phi) - sin(pose.phi));
-    pose.y -= scale * (sin(pose.phi) + cos(pose.phi));
-//    printf("pose.x = %f, pose.y = %f\n", pose.x, pose.y);
+
+    pose.x += velocity.x;
+    pose.y += velocity.y;
 }
 
 
 void Robot::rotateLeft() {
 
-    float scale = 4.0;
 
-    float diff = - scale * 2*M_PI/360;
-    pose.phi += diff;
-    printf("pose.phi = %f\n", pose.phi);
+    velocity.phi = - DT * 2*M_PI/360;;
+    pose.phi += velocity.phi;
+
 
 }
 
 void Robot::rotateRight() {
 
-    float scale = 4.0;
-
-    float diff = scale * 2*M_PI/360;
-    pose.phi += diff;
-    printf("pose.phi = %f\n", pose.phi);
-
+    velocity.phi = DT * 2*M_PI/360;;
+    pose.phi += velocity.phi;
 }
 
 
@@ -193,8 +187,9 @@ std::vector<Landmark> Robot::measureLandmarks(std::vector<Landmark> landmarks)
 
 Eigen::VectorXf Robot::get_state()
 {
-    Eigen::VectorXf state(4);
+    Eigen::VectorXf state(2);
 
+    // with PHI
 //    state(0) = this->pose.x;
 //    state(1) = this->pose.y;
 //    state(2) = this->pose.phi;
@@ -202,10 +197,10 @@ Eigen::VectorXf Robot::get_state()
 //    state(4) = this->velocity.y;
 //    state(5) = this->velocity.phi;
 
+    // without PHI
     state(0) = this->pose.x;
     state(1) = this->pose.y;
-    state(2) = this->velocity.x;
-    state(3) = this->velocity.y;
+
 
     return state;
 }
