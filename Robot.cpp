@@ -193,14 +193,19 @@ std::vector<Landmark> Robot::measureLandmarks(std::vector<Landmark> landmarks)
 
 Eigen::VectorXf Robot::get_state()
 {
-    Eigen::VectorXf state(6);
+    Eigen::VectorXf state(4);
+
+//    state(0) = this->pose.x;
+//    state(1) = this->pose.y;
+//    state(2) = this->pose.phi;
+//    state(3) = this->velocity.x;
+//    state(4) = this->velocity.y;
+//    state(5) = this->velocity.phi;
 
     state(0) = this->pose.x;
     state(1) = this->pose.y;
-    state(2) = this->pose.phi;
-    state(3) = this->velocity.x;
-    state(4) = this->velocity.y;
-    state(5) = this->velocity.phi;
+    state(2) = this->velocity.x;
+    state(3) = this->velocity.y;
 
     return state;
 }

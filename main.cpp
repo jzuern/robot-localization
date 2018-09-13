@@ -62,14 +62,14 @@ int main() {
     SDL_Color orange {.r=255, .g=165, .b=0, .a=255};
     SDL_Color red {.r=255, .g=0, .b=0, .a=255};
 
-    Robot robby(200, 200, 0.0, 20, orange);
-    Robot robby_estimate(200, 200, 0.0, 20, red);
+    Robot robby(200, 200, 2.0, 20, orange);
+    Robot robby_estimate(200, 200, 1.0, 20, red);
 
     // Kalman filter stuff
 
     double dt = 1.0/30; // Time step
-    int n = 6; // number of state variables
-    int m = 3; // number of measurements
+    int n = 4; // number of state variables
+    int m = 2; // number of measurements
 
 
     Eigen::MatrixXf A(n, n); // System dynamics matrix
@@ -78,38 +78,56 @@ int main() {
     Eigen::MatrixXf R(m, m); // Measurement noise covariance
     Eigen::MatrixXf P(n, n); // Estimate error covariance
 
-    A <<    1, 0, 0, dt, 0, 0,
-            0, 1, 0, 0, dt, 0,
-            0, 0, 1, 0, 0, dt,
-            0, 0, 0 , 1, 0, 0,
-            0, 0, 0, 0, 1, 0,
-            0, 0, 0, 0, 0, 1,
 
-    C <<    1, 0, 0, 0, 0, 0,
-            0, 1, 0, 0, 0, 0,
-            0, 0, 1, 0, 0, 0;
+
+
+    // without PHI
+
+    A <<    1., 0., 0, 0.,
+            0., 1., 0., 0,
+            dt, 0., 1., 0.,
+            0.0, dt, 0., 1.;
+
+
+    C <<    1., 0., 0., 0.,
+            0., 1., 0., 0.;
+
+    // Reasonable covariance matrices
+    Q <<    .1, .0, .0, .0,
+            .0, .1, .0, .0,
+            .0, .0, .1, .0,
+            .0,  .0,  .0, .0;
+
+
+    R <<    5.0, 0.0,
+            0.0, 5.0;
+
+
+    P <<    .1, .1, .1, .1,
+            .1, .1, .1, .1,
+            .1, .1, .1, .1,
+            .1, .1, .1, .1;
+
 
 
     // Reasonable covariance matrices
-    Q <<    .05, .05, .05, .0, .0, .0,
-            .05, .05, .05, .0, .0, .0,
-            .05, .05, .05, .0, .0, .0,
-            .0, .0, .0, .0, .0 ,.0,
-            .0, .0, .0, .0, .0, .0,
-            .0, .0, .0, .0, .0, .0;
+//    Q <<    .05, .05, .05, .0, .0, .0,
+//            .05, .05, .05, .0, .0, .0,
+//            .05, .05, .05, .0, .0, .0,
+//            .0, .0, .0, .0, .0 ,.0,
+//            .0, .0, .0, .0, .0, .0,
+//            .0, .0, .0, .0, .0, .0;
 
 
-    R <<    5.0, 0.0, 0.0,
-            0.0, 5.0, 0.0,
-            0.0, 0.0, 5.0;
+
+//    P <<    .1, .1, .1, .1, .1, .1,
+//            .1, .1, .1, .1, .1, .1,
+//            .1, .1, .1, .1, .1, .1,
+//            .1, .1, .1, .1, .1, .1,
+//            .1, .1, .1, .1, .1, .1,
+//            .1, .1, .1, .1, .1, .1;
 
 
-    P <<    .1, .1, .1, .1, .1, .1,
-            .1, .1, 10, 10, .1, .1,
-            .1, 10, 10, 10, .1, .1,
-            .1, 10, 10, 10, .1, .1,
-            .1, 10, 10, 10, .1, .1,
-            .1, 10, 10, 10, 0.1, 0.1;
 
 
     KalmanFilter kf(dt, A, C, Q, R, P);
@@ -117,7 +135,8 @@ int main() {
 
     // Best guess of initial states
     Eigen::VectorXf x0(n);
-    x0 << 200, 200, 0.0, 0., 0., 0.0;
+    x0 << 0.0, 0.0, 0.0, 0.0;
+
     float t0 = 0.0;
     kf.init(t0, x0);
 
@@ -152,27 +171,17 @@ int main() {
 
         // TODO: change from measured absolute position to measured landmarks
         Eigen::VectorXf y = robby.get_state();
-        Eigen::VectorXf y_new(3);
+        Eigen::VectorXf y_new(2);
 
-        y_new << y(0), y(1), y(2);
+        y_new << y(0), y(1);
 
         kf.update(y_new);
         auto x_hat = kf.state();
 
+        robby_estimate.setPose(x_hat(0), x_hat(1),  0.0);
 
-        printf("KF:: x = (%f, %f, %f)\n", y_new(0), y_new(1), y_new(2));
-        printf("KF:: x_hat = (%f, %f, %f)\n", x_hat(0), x_hat(1), x_hat(2));
-
-        robby_estimate.setPose(x_hat(0), x_hat(1), x_hat(2));
         robby_estimate.render(ren);
 
-
-        // visualize measured landmarks
-//        for (auto lm = measured_landmarks.begin(); lm != measured_landmarks.end(); ++lm)
-//        {
-//            SDL_SetRenderDrawColor(ren, lm->id.r, lm->id.g, lm->id.b, lm->id.a);
-//            lm->render(ren);
-//        }
 
         SDL_RenderPresent(ren);
 

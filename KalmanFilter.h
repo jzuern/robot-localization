@@ -45,6 +45,7 @@ public:
     * Return the current state and time.
     */
     Eigen::VectorXf state() { return x_hat; };
+
     double time() { return t; };
 
 private:
