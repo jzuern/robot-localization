@@ -52,6 +52,8 @@ int main() {
 
     SDL_Color orange {.r=255, .g=165, .b=0, .a=255};
     SDL_Color red {.r=255, .g=0, .b=0, .a=255};
+    SDL_Color gray {.r=128, .g=128, .b=128, .a=255};
+
 
     Robot robby(200, 200, 2.0, 20, orange);
     Robot robby_estimate(200, 200, 1.0, 20, red);
@@ -69,8 +71,6 @@ int main() {
     Eigen::MatrixXf P(n, n); // Estimate error covariance
 
 
-    // without PHI
-
     // Best guess of initial states
     Eigen::VectorXf x0(n);
     x0 << 0.0, 0.0, 0.0, 0.0 ;
@@ -86,10 +86,10 @@ int main() {
             0., 1., 0., 0.;
 
     // Reasonable covariance matrices
-    Q <<    .1, .0, .0, .0,
-            .0, .1, .0, .0,
-            .0, .0, .1, .0,
-            .0,  .0,  .0, .0;
+    Q <<    10, .0, .0, .0,
+            .0, 10, .0, .0,
+            .0, .0, 1., .0,
+            .0,  .0,  .0, 1.;
 
 
     R <<    5.0, 0.0,
@@ -100,50 +100,6 @@ int main() {
             .1, .1, .1, .1,
             .1, .1, .1, .1,
             .1, .1, .1, .1;
-
-//    // with PHI
-//
-//
-//    // Best guess of initial states
-//    Eigen::VectorXf x0(n);
-//    x0 << 50, 50., 0., 0., 0., 0.;
-//
-//
-//    A <<    1., 0., 0., DT, 0., 0.,
-//            0., 1., 0., 0., DT, 0.,
-//            0., 0., 1., 0., 0., DT,
-//            0., 0., 0., 0., 0., 0.,
-//            0., 0., 0., 0., 0., 0.,
-//            0., 0., 0., 0., 0., 0.;
-//
-//
-//    C <<    1., 0., 0., 0., 0., 0.,
-//            0., 1., 0., 0., 0., 0.,
-//            0., 0., 0., 0., 0., 0.;
-//
-//    R <<    1.0, 0.0, 0.0,
-//            0.0, 1.0, 0.0,
-//            0.0, 0.0, 1.0;
-//
-//
-//
-//    // Reasonable covariance matrices
-//    Q <<    .05, .05, .05, .05, .05, .05,
-//            .05, .05, .05, .05, .05, .05,
-//            .05, .05, .05, .05, .05, .05,
-//            .05, .05, .05, .05, .05, .05,
-//            .05, .05, .05, .05, .05, .05,
-//            .05, .05, .05, .05, .05, .05;
-//
-//
-//    P <<    .1, .1, .1, .1, .1, .1,
-//            .1, .1, .1, .1, .1, .1,
-//            .1, .1, .1, .1, .1, .1,
-//            .1, .1, .1, .1, .1, .1,
-//            .1, .1, .1, .1, .1, .1,
-//            .1, .1, .1, .1, .1, .1;
-
-
 
 
     KalmanFilter kf(DT, A, C, Q, R, P);
@@ -169,7 +125,7 @@ int main() {
         // render robot
         robby.render(ren);
 
-//         render landmarks
+        // render landmarks
         for (auto lm = landmarks.begin(); lm != landmarks.end(); ++lm)
         {
             SDL_SetRenderDrawColor(ren, lm->id.r, lm->id.g, lm->id.b, lm->id.a);
@@ -185,16 +141,19 @@ int main() {
         Eigen::VectorXf state = robby.get_state();
         kf.update(state);
         auto x_hat = kf.state();
-//
+
         robby_estimate.setPose(x_hat(0), x_hat(1), 0.0);
         robby_estimate.render(ren);
+
+        SDL_SetRenderDrawColor(ren, gray.r, gray.g, gray.b, gray.a);
+        kf.renderSamples(ren);
 
 
         SDL_RenderPresent(ren);
 
 
         //Take a quick break after all that hard work
-        SDL_Delay(50);
+        SDL_Delay(30);
 
         SDL_PumpEvents();
         const Uint8 *key_pressed = SDL_GetKeyboardState(NULL);

@@ -1,13 +1,11 @@
-Robot Localization Game
+Robot Localization
 
 
 
 
 
 # TODO
+- show sampled best estimate for position
 - make Kalman filter use landmark measurements
-- show obstacle grid
 
 # DONE
-- make robot drive like a car (steer and drive forwards)
-- debug Kalman filter with position as input

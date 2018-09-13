@@ -46,3 +46,33 @@ void KalmanFilter::update(const Eigen::VectorXf& y) {
     t += dt;
 }
 
+void KalmanFilter::renderSamples(SDL_Renderer * ren)
+{
+    float var_x = P(0,0);
+    float var_y = P(1,1);
+
+    float mean_x = x_hat(0);
+    float mean_y = x_hat(1);
+
+
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+
+    std::default_random_engine generator(seed);
+    std::normal_distribution<float> dist_x(mean_x, var_x);
+    std::normal_distribution<float> dist_y(mean_y, var_y);
+
+    int nSamples = 100;
+    for (int i = 0; i < nSamples; i++)
+    {
+        float pos_x = dist_x(generator);
+        float pos_y = dist_y(generator);
+
+
+        SDL_RenderDrawPoint(ren, pos_x, pos_y);
+
+    }
+
+
+}
+
+

@@ -6,6 +6,11 @@
 #define UNTITLED1_KALMANFILTER_H
 
 #include <Eigen/Dense>
+#include <SDL_render.h>
+#include <random>
+
+#include <chrono>
+#include <random>
 
 class KalmanFilter {
 public:
@@ -47,6 +52,9 @@ public:
     Eigen::VectorXf state() { return x_hat; };
 
     double time() { return t; };
+
+
+    void renderSamples(SDL_Renderer * ren);
 
 private:
 
