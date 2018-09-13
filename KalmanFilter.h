@@ -55,6 +55,13 @@ public:
 
 
     void renderSamples(SDL_Renderer * ren);
+//
+//    void localization_landmarks(Eigen::VectorXf mu,
+//                                Eigen::VectorXf sigma,
+//                                Eigen::VectorXf u,
+//                                Eigen::VectorXf z,
+//                                Eigen::VectorXf c
+//                                Eigen::VectorXf m);
 
 private:
 

@@ -46,6 +46,23 @@ void KalmanFilter::update(const Eigen::VectorXf& y) {
     t += dt;
 }
 
+
+
+//void KalmanFilter::localization_landmarks(Eigen::VectorXf mu,
+//                                          Eigen::VectorXf sigma,
+//                                          Eigen::VectorXf u,
+//                                          Eigen::VectorXf z,
+//                                          Eigen::VectorXf c
+//                                          Eigen::VectorXf m)
+//{
+//
+//    auto mu_bar = mu +
+//
+//}
+
+
+
+
 void KalmanFilter::renderSamples(SDL_Renderer * ren)
 {
     float var_x = P(0,0);
@@ -74,5 +91,4 @@ void KalmanFilter::renderSamples(SDL_Renderer * ren)
 
 
 }
-
 
