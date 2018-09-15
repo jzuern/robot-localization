@@ -9,7 +9,6 @@
 #include <SDL_render.h>
 #include <random>
 #include "Landmark.h"
-#include <math.h>       /* atan2 */
 
 #include <chrono>
 #include <random>
@@ -24,7 +23,7 @@ public:
     *   C - Output matrix
     *   Q - Process noise covariance
     *   R - Measurement noise covariance
-    *   P - Estimate error covariance
+    *   covariance - Estimate error covariance
     */
 
 
@@ -34,7 +33,7 @@ public:
             const Eigen::MatrixXf& C,
             const Eigen::MatrixXf& Q,
             const Eigen::MatrixXf& R,
-            const Eigen::MatrixXf& P
+            const Eigen::MatrixXf& covariance
     );
 
     /**
@@ -51,19 +50,18 @@ public:
     /**
     * Return the current state and time.
     */
-    Eigen::VectorXf state() { return x_hat; };
-
-    double time() { return t; };
-
+    Eigen::VectorXf get_state() { return state; };
 
     void renderSamples(SDL_Renderer * ren);
 
-    void localization_landmarks(const std::vector<Landmark> & landmarks);
+    void localization_landmarks(const std::vector<Landmark> & observed_landmarks,
+                                              const std::vector<Landmark> & true_landmarks,
+                                              const Eigen::VectorXf & control);
 
 private:
 
     // Matrices for computation
-    Eigen::MatrixXf A, C, Q, R, P, K, P0;
+    Eigen::MatrixXf A, C, Q, R, covariance, K, P0;
 
     // System dimensions
     int m, n;
@@ -81,7 +79,7 @@ private:
     Eigen::MatrixXf I;
 
     // Estimated states
-    Eigen::VectorXf x_hat, x_hat_new;
+    Eigen::VectorXf state, state_new;
 };
 
 

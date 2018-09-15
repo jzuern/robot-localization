@@ -38,12 +38,12 @@ public:
     int radius;
     void render(SDL_Renderer * ren);
 
-    void move(const Uint8 * state);
+    void move(const Uint8 * , Eigen::VectorXf & control);
 
-    void moveForward();
-    void moveBackward();
-    void rotateLeft();
-    void rotateRight();
+    void moveForward(Eigen::VectorXf & control);
+    void moveBackward(Eigen::VectorXf & control);
+    void rotateLeft(Eigen::VectorXf & control);
+    void rotateRight(Eigen::VectorXf & control);
     void setPose(float x, float y, float phi);
 
     Eigen::VectorXf get_state();

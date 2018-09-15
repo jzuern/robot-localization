@@ -81,71 +81,85 @@ void Robot::render(SDL_Renderer * ren)
 }
 
 
-void Robot::move(const Uint8 * state)
+void Robot::move(const Uint8 * state, Eigen::VectorXf & control)
 {
+    // preallocate control vector
+    control(0) = 0.f;
+    control(1) = 0.f;
+
     if (state[SDL_SCANCODE_RIGHT])
     {
+
         printf("rotating right\n");
-        rotateRight();
+        rotateRight(control);
     }
 
 
     if (state[SDL_SCANCODE_LEFT])
     {
         printf("rotating left\n");
-        rotateLeft();
+        rotateLeft(control);
     }
 
 
     if (state[SDL_SCANCODE_UP])
     {
         printf("moving forward\n");
-        moveForward();
+        moveForward(control);
     }
 
 
     if (state[SDL_SCANCODE_DOWN])
     {
         printf("moving backward\n");
-        moveBackward();
+        moveBackward(control);
     }
 
 }
 
 
 
-void Robot::moveForward() {
+void Robot::moveForward(Eigen::VectorXf & control) {
 
     velocity.x = DT * (cos(pose.phi) - sin(pose.phi));
     velocity.y = DT * (sin(pose.phi) + cos(pose.phi));
 
+    control(0) = sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+
     pose.x += velocity.x;
     pose.y += velocity.y;
 }
 
-void Robot::moveBackward(){
+void Robot::moveBackward(Eigen::VectorXf & control){
 
     velocity.x = - DT * (cos(pose.phi) - sin(pose.phi));
     velocity.y = - DT * (sin(pose.phi) + cos(pose.phi));
 
+    control(0) =  - sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
 
     pose.x += velocity.x;
     pose.y += velocity.y;
 }
 
 
-void Robot::rotateLeft() {
+void Robot::rotateLeft(Eigen::VectorXf & control) {
 
 
-    velocity.phi = - DT * 2*M_PI/360;;
+    velocity.phi = - DT * 2*M_PI/360;
+
+    control(1) = velocity.phi;
+
     pose.phi += velocity.phi;
 
 
 }
 
-void Robot::rotateRight() {
+void Robot::rotateRight(Eigen::VectorXf & control) {
 
-    velocity.phi = DT * 2*M_PI/360;;
+    velocity.phi = DT * 2*M_PI/360;
+
+    control(1) = velocity.phi;
+
     pose.phi += velocity.phi;
 }
 
@@ -187,19 +201,12 @@ std::vector<Landmark> Robot::measureLandmarks(std::vector<Landmark> landmarks)
 
 Eigen::VectorXf Robot::get_state()
 {
-    Eigen::VectorXf state(2);
-
-    // with PHI
-//    state(0) = this->pose.x;
-//    state(1) = this->pose.y;
-//    state(2) = this->pose.phi;
-//    state(3) = this->velocity.x;
-//    state(4) = this->velocity.y;
-//    state(5) = this->velocity.phi;
+    Eigen::VectorXf state(3);
 
     // without PHI
     state(0) = this->pose.x;
     state(1) = this->pose.y;
+    state(2) = this->pose.phi;
 
 
     return state;
