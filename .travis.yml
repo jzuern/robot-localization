@@ -1,14 +1,24 @@
+sudo: false
+
 language:
-  - c++
-
-compiler:
-  - gcc
-
+  - cpp
 
 addons:
   apt:
     sources:
-      - george-edison55-precise-backports
-    packages:
-      - cmake-data
-      - cmake
+      - ubuntu-toolchain-r-test
+
+before_install:
+  - pip install --user cpp-coveralls
+
+script:
+  - cmake -H. -Bbuild
+  - cd build
+  - cmake --build .
+  - ctest
+
+after_success:
+  - coveralls --root .. -E ".*external.*" -E ".*CMakeFiles.*" -E ".*test/.*.cpp.*"
+
+notifications:
+  email: false
