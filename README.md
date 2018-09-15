@@ -1,11 +1,14 @@
-Robot Localization
+Robot Localization using Extended Kalman Filtering with landmarks
 
 
+[![Bintray](https://img.shields.io/bintray/v/asciidoctor/maven/asciidoctorj.svg?maxAge=2592000)](https://bintray.com/asciidoctor/maven/asciidoctorj)
 
+
+# Prerequesites
 
 
 # TODO
-- show sampled best estimate for position
-- make Kalman filter use landmark measurements
 
-# DONE
+- Add tests!!
+- more README.md
+- 
