@@ -73,7 +73,7 @@ int main() {
 
     // Best guess of initial states
     Eigen::VectorXf x0(n);
-    x0 << 0.0, 0.0, 0.0, 0.0, 0.0 ;
+    x0 << 0.0, 0.0, 0.0, 0.0, 0.0;
 
     A <<    1., 0., 0., 0., 0.,
             0., 1., 0., 0., 0.,
@@ -86,15 +86,15 @@ int main() {
             0., 1., 0., 0., 0.;
 
     // Reasonable covariance matrices
-    Q <<    10., .0, .0, .0, 0.,
-            .0, 10., .0, .0, 0.,
-            .0, .0, 1., .0, 0.,
-            .0, .0, .0, 1., 0.,
-            .0, .0, .0, 0., 1.;
+    Q <<    100., .0, .0, .0, 0.,
+            .0, 100., .0, .0, 0.,
+            .0, .0, 10., .0, 0.,
+            .0, .0, .0, 10., 0.,
+            .0, .0, .0, 0., 10.;
 
 
-    R <<    5.0, 0.0,
-            0.0, 5.0;
+    R <<    15.0, 0.0,
+            0.0, 15.0;
 
 
     P <<    .1, .1, .1, .1, .1,
@@ -140,12 +140,20 @@ int main() {
         // measure landmark positions
         auto measured_landmarks = robby.measureLandmarks(landmarks);
 
+        // OPTION A: Localize directly
+
         Eigen::VectorXf state = robby.get_state();
         kf.update(state);
         auto x_hat = kf.state();
 
         robby_estimate.setPose(x_hat(0), x_hat(1), 0.0);
         robby_estimate.render(ren);
+
+
+
+
+        // OPTION B: Localize via Landmarks
+        kf.localization_landmarks(landmarks);
 
         SDL_SetRenderDrawColor(ren, gray.r, gray.g, gray.b, gray.a);
         kf.renderSamples(ren);

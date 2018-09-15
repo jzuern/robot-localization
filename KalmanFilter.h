@@ -8,6 +8,8 @@
 #include <Eigen/Dense>
 #include <SDL_render.h>
 #include <random>
+#include "Landmark.h"
+#include <math.h>       /* atan2 */
 
 #include <chrono>
 #include <random>
@@ -55,13 +57,8 @@ public:
 
 
     void renderSamples(SDL_Renderer * ren);
-//
-//    void localization_landmarks(Eigen::VectorXf mu,
-//                                Eigen::VectorXf sigma,
-//                                Eigen::VectorXf u,
-//                                Eigen::VectorXf z,
-//                                Eigen::VectorXf c
-//                                Eigen::VectorXf m);
+
+    void localization_landmarks(const std::vector<Landmark> & landmarks);
 
 private:
 

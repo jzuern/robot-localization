@@ -12,7 +12,7 @@
 
 #define WWIDTH 640
 #define WHEIGHT 480
-#define DT 1
+#define DT 2
 
 
 
