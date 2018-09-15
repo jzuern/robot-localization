@@ -13,8 +13,14 @@ std::vector<Landmark> createLandmarks()
     std::vector<Landmark> lmks;
 
     SDL_Color color_red = {.r = 255, .g = 0, .b = 0, .a = 255 };
+    SDL_Color color_green = {.r = 0, .g = 255, .b = 0, .a = 255 };
+    SDL_Color color_blue = {.r = 0, .g = 0, .b = 255, .a = 255 };
+    SDL_Color color_purple = {.r = 255, .g = 0, .b = 255, .a = 255 };
 
     lmks.push_back( Landmark(100.,100.,color_red));
+    lmks.push_back( Landmark(300.,300.,color_green));
+//    lmks.push_back( Landmark(124.,478.,color_blue));
+//    lmks.push_back( Landmark(214.,312.,color_purple));
 
     return lmks;
 }
@@ -51,21 +57,21 @@ int main() {
     SDL_Color gray {.r=128, .g=128, .b=128, .a=255};
 
 
-    Robot robby(200, 200, 0.0, 20, orange);
-    Robot robby_estimate(200, 200, 0.0, 20, red);
+    Robot robby(200, 200, 0.0, 20, red);
+    Robot robby_estimate(200, 200, 0.0, 20, gray);
 
     // Kalman filter stuff
 
     int n = 3; // number of state variables (x,y,phi)
     int m = 3; // number of measurements (landmark x, y, index)
 
-    // BOOK:
-    // control vector: v, omega
-    // state vector: x, y, phi
-    //
 
     // Best guess of initial states
-    Eigen::VectorXf x0(n);
+    Eigen::VectorXf x0(n); //[x, y, phi]
+
+    // control vector:
+    Eigen::VectorXf control(2); //  [v, omega]
+
 
     x0 << 200., 200., 0.0;
 
@@ -76,25 +82,15 @@ int main() {
     Eigen::MatrixXf covariance(n, n); // Estimate error covariance
 
 
-//    A <<    1., 0., 0., 0., 0.,
-//            0., 1., 0., 0., 0.,
-//            DT, 0., 1., 0., 0.,
-//            0., DT, 0., 1., 0.,
-//            0., 0., 0., 0., 0.;
-//
-//
-//    C <<    1., 0., 0., 0., 0.,
-//            0., 1., 0., 0., 0.;
-//
     // Reasonable covariance matrices
-    covariance <<    1., .0, .0,
-                    .0, 1., .0,
-                    .0,    .0,  1.;
+    covariance <<    5., .0, .0,
+                     .0, 5., .0,
+                    .0, .0,  5.;
 
 
-    R <<    2.0, 0.1, 0.1,
-            0.1, 2.0, 0.1,
-            0.1, 0.1,  2.0;
+    R <<    2.0, 0., 0.,
+            0., 2.0, 0.,
+            0., 0.,  2.0;
 
     Q <<    0.1, 0.1, 0.1,
             0.1, 0.1, 0.1,
@@ -107,10 +103,9 @@ int main() {
     float t0 = 0.0;
     kf.init(t0, x0);
 
-
     // rendering loop
     int i = 0;
-    while (i < 1000) {
+    while (true) {
 
         //First clear the renderer
         SDL_RenderClear(ren);
@@ -122,41 +117,24 @@ int main() {
 
         SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
 
-        // render robot
-        robby.render(ren);
-
-        // render landmarks
-        for (auto lm = landmarks.begin(); lm != landmarks.end(); ++lm)
-        {
-            SDL_SetRenderDrawColor(ren, lm->id.r, lm->id.g, lm->id.b, lm->id.a);
-            lm->render(ren);
-        }
-
         // update renderer
         SDL_RenderPresent(ren);
 
         // move robot
         SDL_PumpEvents();
         const Uint8 *key_pressed = SDL_GetKeyboardState(NULL);
-        Eigen::VectorXf control(2); // control vector
-
         robby.move(key_pressed, control);
-
 
         // measure landmark positions
         auto observed_landmarks = robby.measureLandmarks(landmarks);
 
+        // get robot state
         Eigen::VectorXf state = robby.get_state();
 
-        // OPTION A: Localize directly
-//        kf.update(state);
-
-        // OPTION B: Localize via Landmarks
+        // Localize via Landmarks
         kf.localization_landmarks(observed_landmarks, landmarks, control);
 
-        // END OPTIONS
-
-
+        // get estimated state (x,y,phi) as estimated by the EKF
         auto x_hat = kf.get_state();
 
         printf("True x,y,phi: %f, %f, %f\n", state(0), state(1),state(2));
@@ -164,6 +142,22 @@ int main() {
 
         robby_estimate.setPose(x_hat(0), x_hat(1), x_hat(2));
         robby_estimate.render(ren);
+
+        // render robot
+        robby.render(ren);
+
+        // render true landmarks
+        for (auto lm = landmarks.begin(); lm != landmarks.end(); ++lm)
+        {
+            SDL_SetRenderDrawColor(ren, lm->id.r, lm->id.g, lm->id.b, lm->id.a);
+            lm->render(ren);
+        }
+        // render observed landmarks
+        for (auto lm = observed_landmarks.begin(); lm != observed_landmarks.end(); ++lm)
+        {
+            SDL_SetRenderDrawColor(ren, lm->id.r, lm->id.g, lm->id.b, lm->id.a);
+            lm->render(ren);
+        }
 
 
         SDL_SetRenderDrawColor(ren, gray.r, gray.g, gray.b, gray.a);

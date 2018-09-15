@@ -14,8 +14,7 @@ Robot::Robot(int x_start, int y_start, float orientation, int rad, SDL_Color col
     pose.y = y_start;
     pose.phi = orientation;
 
-    velocity.x = 0.;
-    velocity.y = 0.;
+    velocity.v = 0.;
     velocity.phi = 0.;
 
     // static properties
@@ -72,8 +71,9 @@ void Robot::render(SDL_Renderer * ren)
 
     int x0 = int_pose_x;
     int y0 = int_pose_y;
-    int x1 = x0 + int(15*(cos(pose.phi) - sin(pose.phi)));
-    int y1 = y0 + int(15*(sin(pose.phi) + cos(pose.phi)));
+    int x1 = x0 + int(15*(cos(pose.phi)));
+    int y1 = y0 + int(15*(sin(pose.phi)));
+
 
     SDL_RenderDrawLine(ren, x0, y0, x1, y1);
 
@@ -86,6 +86,7 @@ void Robot::move(const Uint8 * state, Eigen::VectorXf & control)
     // preallocate control vector
     control(0) = 0.f;
     control(1) = 0.f;
+
 
     if (state[SDL_SCANCODE_RIGHT])
     {
@@ -121,24 +122,22 @@ void Robot::move(const Uint8 * state, Eigen::VectorXf & control)
 
 void Robot::moveForward(Eigen::VectorXf & control) {
 
-    velocity.x = DT * (cos(pose.phi) - sin(pose.phi));
-    velocity.y = DT * (sin(pose.phi) + cos(pose.phi));
+    velocity.v = 1*DT;
 
-    control(0) = sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+    control(0) = velocity.v;
 
-    pose.x += velocity.x;
-    pose.y += velocity.y;
+    pose.x += velocity.v * cos(pose.phi);
+    pose.y += velocity.v * sin(pose.phi);
 }
 
 void Robot::moveBackward(Eigen::VectorXf & control){
 
-    velocity.x = - DT * (cos(pose.phi) - sin(pose.phi));
-    velocity.y = - DT * (sin(pose.phi) + cos(pose.phi));
+    velocity.v = - 1*DT;
 
-    control(0) =  - sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+    control(0) = velocity.v;
 
-    pose.x += velocity.x;
-    pose.y += velocity.y;
+    pose.x += velocity.v * cos(pose.phi);
+    pose.y += velocity.v * sin(pose.phi);
 }
 
 
@@ -184,11 +183,11 @@ std::vector<Landmark> Robot::measureLandmarks(std::vector<Landmark> landmarks)
     {
         // Define random generator with Gaussian distribution
 
-        float rx = 5.0*static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-        float ry = 5.0*static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+        float rx = .1*static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+        float ry = .1*static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 
-        rx = 0.;
-        ry = 0.;
+//        rx = 0.;
+//        ry = 0.;
 
         float est_pos_x = rx + lm->pos.x;
         float est_pos_y = ry + lm->pos.y;

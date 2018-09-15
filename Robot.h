@@ -22,7 +22,7 @@ typedef struct Pose
 
 typedef struct Velocity
 {
-    float x, y;
+    float v;
     float phi;
 } Velocity;
 
