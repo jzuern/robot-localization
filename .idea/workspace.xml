@@ -12,10 +12,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="123fc57b-f3df-4dcf-b563-12d23eff9191" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/KalmanFilter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/KalmanFilter.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/KalmanFilter.h" beforeDir="false" afterPath="$PROJECT_DIR$/KalmanFilter.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Robot.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Robot.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Robot.h" beforeDir="false" afterPath="$PROJECT_DIR$/Robot.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
@@ -29,11 +26,11 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="main.cpp" pinned="false" current-in-tab="true">
+      <file leaf-file-name="main.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="84">
-              <caret line="47" lean-forward="true" selection-start-line="47" selection-end-line="47" />
+            <state relative-caret-position="2567">
+              <caret line="151" column="27" lean-forward="true" selection-start-line="151" selection-start-column="27" selection-end-line="151" selection-end-column="27" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -41,11 +38,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Robot.cpp" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Robot.cpp" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Robot.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="301">
-              <caret line="189" column="31" lean-forward="true" selection-start-line="189" selection-start-column="31" selection-end-line="189" selection-end-column="31" />
+            <state relative-caret-position="179">
+              <caret line="180" column="21" lean-forward="true" selection-start-line="180" selection-start-column="21" selection-end-line="180" selection-end-column="21" />
               <folding>
                 <element signature="e#41#59#0" expanded="true" />
               </folding>
@@ -56,8 +53,8 @@
       <file leaf-file-name="KalmanFilter.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/KalmanFilter.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="607">
-              <caret line="180" column="25" lean-forward="true" selection-start-line="180" selection-start-column="25" selection-end-line="180" selection-end-column="25" />
+            <state relative-caret-position="131">
+              <caret line="56" lean-forward="true" selection-start-line="56" selection-end-line="56" />
               <folding>
                 <element signature="e#41#66#0" expanded="true" />
               </folding>
@@ -111,11 +108,11 @@
         <option value="$PROJECT_DIR$/Landmark.cpp" />
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/defines.h" />
-        <option value="$PROJECT_DIR$/Robot.cpp" />
         <option value="$PROJECT_DIR$/Robot.h" />
         <option value="$PROJECT_DIR$/KalmanFilter.h" />
         <option value="$PROJECT_DIR$/KalmanFilter.cpp" />
         <option value="$PROJECT_DIR$/main.cpp" />
+        <option value="$PROJECT_DIR$/Robot.cpp" />
       </list>
     </option>
   </component>
@@ -195,12 +192,12 @@
       <workItem from="1536829101417" duration="10252000" />
       <workItem from="1536904527507" duration="3428000" />
       <workItem from="1536997053263" duration="44000" />
-      <workItem from="1536997149870" duration="14710000" />
+      <workItem from="1536997149870" duration="15212000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="75500000" />
+    <option name="totallyTimeSpent" value="76002000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="67" y="25" width="1051" height="1055" extended-state="4" />
@@ -534,30 +531,30 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/KalmanFilter.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="607">
-          <caret line="180" column="25" lean-forward="true" selection-start-line="180" selection-start-column="25" selection-end-line="180" selection-end-column="25" />
+        <state relative-caret-position="131">
+          <caret line="56" lean-forward="true" selection-start-line="56" selection-end-line="56" />
           <folding>
             <element signature="e#41#66#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Robot.cpp">
+    <entry file="file://$PROJECT_DIR$/main.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="301">
-          <caret line="189" column="31" lean-forward="true" selection-start-line="189" selection-start-column="31" selection-end-line="189" selection-end-column="31" />
+        <state relative-caret-position="2567">
+          <caret line="151" column="27" lean-forward="true" selection-start-line="151" selection-start-column="27" selection-end-line="151" selection-end-column="27" />
           <folding>
-            <element signature="e#41#59#0" expanded="true" />
+            <element signature="e#0#19#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/main.cpp">
+    <entry file="file://$PROJECT_DIR$/Robot.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="84">
-          <caret line="47" lean-forward="true" selection-start-line="47" selection-end-line="47" />
+        <state relative-caret-position="179">
+          <caret line="180" column="21" lean-forward="true" selection-start-line="180" selection-start-column="21" selection-end-line="180" selection-end-column="21" />
           <folding>
-            <element signature="e#0#19#0" expanded="true" />
+            <element signature="e#41#59#0" expanded="true" />
           </folding>
         </state>
       </provider>

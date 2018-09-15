@@ -187,6 +187,9 @@ std::vector<Landmark> Robot::measureLandmarks(std::vector<Landmark> landmarks)
         float rx = 5.0*static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
         float ry = 5.0*static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 
+        rx = 0.;
+        ry = 0.;
+
         float est_pos_x = rx + lm->pos.x;
         float est_pos_y = ry + lm->pos.y;
 

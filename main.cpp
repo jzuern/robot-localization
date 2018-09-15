@@ -110,7 +110,7 @@ int main() {
 
     // rendering loop
     int i = 0;
-    while (i < 100) {
+    while (i < 1000) {
 
         //First clear the renderer
         SDL_RenderClear(ren);
@@ -152,7 +152,7 @@ int main() {
 //        kf.update(state);
 
         // OPTION B: Localize via Landmarks
-        kf.localization_landmarks(landmarks, observed_landmarks, control);
+        kf.localization_landmarks(observed_landmarks, landmarks, control);
 
         // END OPTIONS
 
