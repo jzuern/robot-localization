@@ -56,12 +56,6 @@ void KalmanFilter::localization_landmarks(const std::vector<Landmark> & observed
 {
 
     /* INFO:
-     * Formel mu = 'state'
-     * Formel sigma = 'P'
-     * Formel R = 'Q'
-     * Formel u = (not used?)
-     * Formel z = 'y'
-     * Formel c = ?
      *
      * x_hat(0) = x
      * x_hat(1) = y
@@ -72,16 +66,13 @@ void KalmanFilter::localization_landmarks(const std::vector<Landmark> & observed
     std::cout << "KF:: state = \n" << state << std::endl;
     std::cout << "KF:: control = \n" << control << std::endl;
 
-
-
     float v = control(0);
     float omega = control(1);
 
     float phi = state(2);
-    float dx;
-    float dy;
+    float dx, dy, domega;
 
-    if (omega > 1E-3) // robot moves along circle with radius v/omega
+    if (omega > 1E-2) // robot moves along circle with radius v/omega
     {
         dx = v / omega * (- sin(phi) + sin(phi + omega*DT));
         dy = v / omega * (  cos(phi) - cos(phi + omega*DT));
@@ -91,13 +82,13 @@ void KalmanFilter::localization_landmarks(const std::vector<Landmark> & observed
         dx = v*DT*cos(phi);
         dy = v*DT*sin(phi);
     }
-
+    domega = omega * DT;
 
     // 1 - update state estimate
     Eigen::VectorXf state_new(3);
     state_new(0) = state(0) + dx;
     state_new(1) = state(1) + dy;
-    state_new(2) = state(2) + omega * DT;
+    state_new(2) = state(2) + domega;
 
     std::cout << "KF:: state_new = \n" << state_new << std::endl;
 
@@ -107,10 +98,12 @@ void KalmanFilter::localization_landmarks(const std::vector<Landmark> & observed
     float entry_13;
     float entry_23;
 
-    if (omega > 1E-3) // robot moves along circle with radius v/omega
+    if (omega > 1E-2) // robot moves along circle with radius v/omega
     {
-        entry_13 = v / omega * (- sin(phi) + sin(phi + omega*DT));
-        entry_23 = v / omega * (  cos(phi) - cos(phi + omega*DT));
+//        entry_13 = v / omega * (- sin(phi) + sin(phi + omega*DT)); // falsch?
+//        entry_23 = v / omega * (  cos(phi) - cos(phi + omega*DT)); // falsch?
+        entry_13 = v / omega * ( cos(phi) - cos(phi + omega*DT));
+        entry_23 = v / omega * (  sin(phi) - sin(phi + omega*DT));
     }
     else
     {
@@ -125,24 +118,17 @@ void KalmanFilter::localization_landmarks(const std::vector<Landmark> & observed
             0, 1, entry_23,
             0, 0, 1;
 
-//    std::cout << "KF:: covariance old = \n" << covariance << std::endl;
-
-
     covariance = G * covariance * G.transpose() + Q;
 
-
-    std::cout << "KF:: G = \n" << G << std::endl;
-    std::cout << "KF:: Q = \n" << Q << std::endl;
-    std::cout << "KF:: R = \n" << R << std::endl;
-
-
-    std::cout << "KF:: covariance new = \n" << covariance << std::endl;
-
+//    std::cout << "KF:: G = \n" << G << std::endl;
+//    std::cout << "KF:: Q = \n" << Q << std::endl;
+//    std::cout << "KF:: R = \n" << R << std::endl;
+//    std::cout << "KF:: covariance new = \n" << covariance << std::endl;
 
     // covariances of landmark measurements
-    float sigma_r = 0.1f;
-    float sigma_phi = 0.1f;
-    float sigma_s = 0.1f;
+    float sigma_r = 0.01f;
+    float sigma_phi = 0.01f;
+    float sigma_s = 0.001f;
 
     R <<    sigma_r, 0, 0,
             0, sigma_phi, 0,
@@ -166,7 +152,7 @@ void KalmanFilter::localization_landmarks(const std::vector<Landmark> & observed
         auto observed_lm = observed_landmarks[i];
 
 
-        // OBSERVED LANDMARKS (fake landmark observation)
+        // OBSERVED LANDMARKS
         Eigen::VectorXf delta_(2);
         delta_(0) = observed_lm.pos.x - state_new(0);
         delta_(1) = observed_lm.pos.y - state_new(1);
@@ -177,6 +163,7 @@ void KalmanFilter::localization_landmarks(const std::vector<Landmark> & observed
         z_i(0) = sqrt(q_);
         z_i(1) = atan2(delta_(1),delta_(0)) - state_new(2);
         z_i(2) = i;
+
 
         // TRUE LANDMARKS
         Eigen::VectorXf delta(2);
@@ -189,6 +176,9 @@ void KalmanFilter::localization_landmarks(const std::vector<Landmark> & observed
         z_hat_i(0) = sqrt(q);
         z_hat_i(1) = atan2(delta(1),delta(0)) - state_new(2);
         z_hat_i(2) = i;
+
+        // TEST
+//        z_i = z_hat_i;
 
         // END
 
@@ -203,13 +193,8 @@ void KalmanFilter::localization_landmarks(const std::vector<Landmark> & observed
         H_i(2,1) = 0.;
         H_i(2,2) = 0.;
 
-        auto temporal = H_i * covariance * H_i.transpose() + R;
 
-        std::cout << "KF:: temporal = \n" << temporal << std::endl;
-        std::cout << "KF:: temporal.inverse = \n" << temporal.inverse() << std::endl;
-
-
-        auto K_i = covariance * H_i.transpose() * (temporal).inverse();
+        auto K_i = covariance * H_i.transpose() * (H_i * covariance * H_i.transpose() + R).inverse();
 
         std::cout << "KF:: H_i = \n" << H_i << std::endl;
         std::cout << "KF:: K_i = \n" << K_i << std::endl;
@@ -222,15 +207,11 @@ void KalmanFilter::localization_landmarks(const std::vector<Landmark> & observed
 
     }
 
-    state_new += sum1;
+    state = state_new + sum1;
     covariance = (I - sum2)*covariance;
-
-    state = state_new;
 
     std::cout << "KF:: final state_new = \n" << state << std::endl;
     std::cout << "KF:: final covariance = \n" << covariance << std::endl;
-
-    int a = 0;
 }
 
 

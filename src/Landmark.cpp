@@ -32,6 +32,8 @@ void Landmark::render(SDL_Renderer * ren)
     int32_t int_pose_y = int(pos.y);
 
 
+
+
     while (x >= y)
     {
         //  Each of the following renders an octant of the circle

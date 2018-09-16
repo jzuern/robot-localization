@@ -3,9 +3,15 @@
 //
 
 #include <gtest/gtest.h>
+#include "../src/Robot.h"
 
-TEST(MyTestSuitName, MyTestCaseName) {
-    int actual = 1;
-    EXPECT_GT(actual, 0);
-    EXPECT_EQ(1, actual) << "Should be equal to one";
+
+TEST(TestSuite, RobotTest)
+{
+
+    SDL_Color red {.r=255, .g=0, .b=0, .a=255};
+    Robot robby(200, 200, 0.0, 20, red);
+
+    EXPECT_EQ(1000, 1000);
 }
+

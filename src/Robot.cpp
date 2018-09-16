@@ -183,11 +183,11 @@ std::vector<Landmark> Robot::measureLandmarks(std::vector<Landmark> landmarks)
     {
         // Define random generator with Gaussian distribution
 
-        float rx = .1*static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-        float ry = .1*static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+        float rx = .001*static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+        float ry = .001*static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 
-//        rx = 0.;
-//        ry = 0.;
+//        rx = 0.f;
+//        ry = 0.f;
 
         float est_pos_x = rx + lm->pos.x;
         float est_pos_y = ry + lm->pos.y;
